@@ -26,7 +26,7 @@ app.post('/ussd',async(req,res)=>{
      3 My Account
      4 Delete Account`;
    }else if(text === "1"){
-     const  result = await postAirtime();
+     const  result = await postAirtime(phoneNumber);
      response = `END ${result}`;
    }else if(text === "2"){
      const  airtime = await updateSingleDoc();
@@ -58,13 +58,14 @@ app.post('/ussd',async(req,res)=>{
 
 })
 //create post  function
-async function postAirtime(){
+async function postAirtime(phonenumber){
   const  data  = {
     name : "Julius",
-    phone_Number: "0799294225"
+    phonenumber
   }
   try {
-    await addDoc(collectionRef,data);
+    const docRef = doc(collectionRef,phonenumber)
+    await setDoc(docRef,data);
     return "Your data is saved"
   } catch (error) {
     console.log(error);
