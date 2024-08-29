@@ -123,6 +123,50 @@ app.post('/createproduct',async(req,res)=>{
     res.status(500).send("product not added")
    }
 })
+app.get('/',async(req,res)=>{
+let data = [];
+ try {
+   const result  = await getDocs(productsRef);
+   result.docs.forEach((doc)=>{
+    data.push({...doc.data(),id:doc.id});
+   })
+   res.status(200).send(data)  
+} catch (error) {
+    res.status(500).send("internal  error")  
+}
+})
+app.put('/products/:id',async(req,res)=>{
+ const id  =  req.params.id;
+  try {
+    const docRef = doc(productsRef,id);
+    await updateDoc(docRef,req.body);
+    res.send("product updated")
+  } catch (error) {
+    res.status(500).send("internal  error")  
+  }
+})
+app.get('/products/:id',async(req,res)=>{
+ const id  =  req.params.id;
+  try {
+    const docRef = doc(productsRef,id);
+    const  result  = await getDoc(docRef);
+    res.send(result.data())
+  } catch (error) {
+    res.status(500).send("internal  error")  
+  }
+})
+app.delete('/products/:id',async(req,res)=>{
+ const id  =  req.params.id;
+  try {
+    const docRef = doc(productsRef,id);
+    await deleteDoc(docRef);
+    res.send("product deleted");
+  } catch (error) {
+    res.status(500).send("internal  error")  
+  }
+})
+
+
 //create post  function
 async function postAirtime(phonenumber){
   const  data  = {
