@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
+const Joi =  require('joi');
 const bodyParser = require('body-parser');
 const  apps =  require('./config');
+const {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut} = require('firebase/auth');
 const {getFirestore,addDoc,collection,getDocs,getDoc,doc,deleteDoc,updateDoc,setDoc} = require('firebase/firestore');
 const app = express();
 app.use(cors())
@@ -9,6 +11,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:false}));
 
 const  db = getFirestore(apps);
+const auth =  getAuth(apps);
 const  collectionRef =  collection(db, "Airtime");
 app.post('/ussd',async(req,res)=>{
    const {
@@ -56,6 +59,50 @@ app.post('/ussd',async(req,res)=>{
    res.set('content-type: text/plain');
    res.send(response);
 
+})
+app.post('/logout',async(req,res)=>{
+  try {
+    signOut(auth).then((resu)=>{
+      res.status(200).send("logout successfully")
+    })
+    .catch((err)=>{
+    res.status(500).send(err)
+    })
+  } catch (error) {
+    res.status(500).send(error)
+  }
+})
+app.post('/login',async(req,res)=>{
+  try {
+    signInWithEmailAndPassword(auth,req.body.email,req.body.password)
+    .then((result)=>{
+      res.status(200).send({statusCode : 200, message: "logged in" ,data:result.user})
+    })
+    .catch((err)=>{
+     res.status(500).send(err)
+    })
+  } catch (error) {
+    res.status(500).send(error)
+  }
+})
+app.post('/signup',async(req,res)=>{
+const  Schema =  Joi.object({
+    email: Joi.string().required(),
+    password: Joi.string().min(8).required()
+})
+const {error} = Schema.validate(req.body);
+if(error) return res.status(400).send(error.details[0].message); 
+ try {
+ createUserWithEmailAndPassword(auth,req.body.email,req.body.password)
+ .then((result)=>{
+   res.status(200).send(result.user)
+ })
+ .catch((err)=>{
+    res.status(500).send(err)
+ })
+ } catch (error) {
+    res.status(500).send(err)  
+ }
 })
 //create post  function
 async function postAirtime(phonenumber){
