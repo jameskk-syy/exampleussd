@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const  apps =  require('./config');
-const {getFirestore,addDoc,collection} = require('firebase/firestore');
+const {getFirestore,addDoc,collection,getDocs} = require('firebase/firestore');
 const app = express();
 app.use(cors())
 app.use(bodyParser.json())
@@ -41,10 +41,11 @@ app.post('/ussd',async(req,res)=>{
     response = `END Your phone number is ${phone}`;
    }
    else if(text === "3*2"){
-    const  phone  =  "0796598108";
-    const name  = "James Maina"
-    const idno  = "37868062"
-    response = `END Your account details \n Phone Number : ${phone} \n Full Name:  ${name} \n ID NO: ${idno}`;
+    const result = await getAirtime();
+    response = `END Your account details \n`;
+    result.forEach((resu,index)=>{
+     response += `Names : ${resu.name} \n Phone Number ${resu.phone_Number}`;
+    })
    }
 
    res.set('content-type: text/plain');
@@ -60,6 +61,18 @@ async function postAirtime(){
   try {
     await addDoc(collectionRef,data);
     return "Your data is saved"
+  } catch (error) {
+    console.log(error);
+  }
+}
+async function getAirtime(){
+ const datas = [];
+  try {
+    const result = await getDocs(collectionRef);
+    result.docs.forEach((doc)=>{
+        datas.push({...doc.data(),id:doc.id});
+    })
+   return datas;
   } catch (error) {
     console.log(error);
   }
