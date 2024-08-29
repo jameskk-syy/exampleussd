@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 const  db = getFirestore(apps);
 const auth =  getAuth(apps);
 const  collectionRef =  collection(db, "Airtime");
+const  productsRef =  collection(db, "Products");
 app.post('/ussd',async(req,res)=>{
    const {
     sessionId,
@@ -103,6 +104,24 @@ if(error) return res.status(400).send(error.details[0].message);
  } catch (error) {
     res.status(500).send(err)  
  }
+})
+app.post('/createproduct',async(req,res)=>{
+  const Schema = Joi.object({
+    productName: Joi.string().required(),
+    price:Joi.number().required()
+  })
+  const {error} = Schema.validate(req.body);
+  if(error) return res.status(400).send(error.details[0].message);
+   try {
+    const data = {
+        productName: req.body.productName,
+        price : req.body.price
+    }
+    await addDoc(productsRef,data)
+    res.status(200).send("product added successfully")
+   } catch (error) {
+    res.status(500).send("product not added")
+   }
 })
 //create post  function
 async function postAirtime(phonenumber){
