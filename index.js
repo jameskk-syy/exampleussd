@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const  apps =  require('./config');
-const {getFirestore,addDoc,collection,getDocs} = require('firebase/firestore');
+const {getFirestore,addDoc,collection,getDocs,getDoc,doc} = require('firebase/firestore');
 const app = express();
 app.use(cors())
 app.use(bodyParser.json())
@@ -37,8 +37,8 @@ app.post('/ussd',async(req,res)=>{
      2 My Acoount Details`;
    }
    else if(text === "3*1"){
-    const  phone  =  "0796598108";
-    response = `END Your phone number is ${phone}`;
+    const result =  await getSingleDoc();
+    response = `END Names : ${result.name} \n Phone Number ${result.phone_Number}`;
    }
    else if(text === "3*2"){
     const result = await getAirtime();
@@ -76,6 +76,15 @@ async function getAirtime(){
   } catch (error) {
     console.log(error);
   }
+}
+async function getSingleDoc(){
+ try {
+  const docRef = doc(collectionRef,"tdYKn7jawRDoTfpJ8sAJ") 
+  const result = await getDoc(docRef); 
+  return result.data();
+ } catch (error) {
+    console.log(error);
+ }
 }
 const port = process.env.PORT || 3000;
 app.listen(port,()=>{
