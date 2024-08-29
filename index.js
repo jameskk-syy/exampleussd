@@ -18,13 +18,29 @@ app.post('/ussd',async(req,res)=>{
    if(text === ""){
      response = `CON Choose what you  want to  do 
      1 Check  Airtime
-     2 Buy Airtime`;
+     2 Buy Airtime
+     3 My Account`;
    }else if(text === "1"){
      const  airtime  =  20;
      response = `END Your Airtime balance is ${airtime} KSH`;
    }else if(text === "2"){
      const  airtime  =  20;
      response = `END Your have bought airtime worthy ${airtime} KSH`;
+   }
+   else if(text === "3"){
+     response = `CON Choose what you  want to  check
+     1 Phone number
+     2 My Acoount Details`;
+   }
+   else if(text === "3*1"){
+    const  phone  =  "0796598108";
+    response = `END Your phone number is ${phone}`;
+   }
+   else if(text === "3*2"){
+    const  phone  =  "0796598108";
+    const name  = "James Maina"
+    const idno  = "37868062"
+    response = `END Your account details \n Phone Number : ${phone} \n Full Name:  ${name} \n ID NO: ${idno}`;
    }
 
    res.set('content-type: text/plain');
