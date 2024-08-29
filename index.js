@@ -29,7 +29,7 @@ app.post('/ussd',async(req,res)=>{
      const  result = await postAirtime(phoneNumber);
      response = `END ${result}`;
    }else if(text === "2"){
-     const  airtime = await updateSingleDoc();
+     const  airtime = await updateSingleDoc(phoneNumber);
      response = `END ${airtime} `;
    }
    else if(text === "3"){
@@ -38,7 +38,7 @@ app.post('/ussd',async(req,res)=>{
      2 My Acoount Details`;
    }
    else if(text === "3*1"){
-    const result =  await getSingleDoc();
+    const result =  await getSingleDoc(phoneNumber);
     response = `END Names : ${result.name} \n Phone Number ${result.phone_Number}`;
    }
    else if(text === "3*2"){
@@ -49,7 +49,7 @@ app.post('/ussd',async(req,res)=>{
     })
    }
    else if(text === "4"){
-    const  airtime = await deleteSingleDoc();
+    const  airtime = await deleteSingleDoc(phoneNumber);
     response = `END ${airtime} `;
    }
 
@@ -83,31 +83,31 @@ async function getAirtime(){
     console.log(error);
   }
 }
-async function getSingleDoc(){
+async function getSingleDoc(phonenumber){
  try {
-  const docRef = doc(collectionRef,"tdYKn7jawRDoTfpJ8sAJ") 
+  const docRef = doc(collectionRef,phonenumber) 
   const result = await getDoc(docRef); 
   return result.data();
  } catch (error) {
     console.log(error);
  }
 }
-async function deleteSingleDoc(){
+async function deleteSingleDoc(phonenumber){
  try {
-  const docRef = doc(collectionRef,"tdYKn7jawRDoTfpJ8sAJ") 
+  const docRef = doc(collectionRef,phonenumber) 
   const result = await deleteDoc(docRef); 
   return "data deleted";
  } catch (error) {
     console.log(error);
  }
 }
-async function updateSingleDoc(){
+async function updateSingleDoc(phonenumber){
 const  data = {
   name : "James Maina",
   phone_Number: "0796598108"
 }
  try {
-  const docRef = doc(collectionRef,"tdYKn7jawRDoTfpJ8sAJ") 
+  const docRef = doc(collectionRef,phonenumber) 
   const result = await setDoc(docRef,data); 
   return "data updated";
  } catch (error) {
