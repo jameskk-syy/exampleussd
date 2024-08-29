@@ -1,11 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const  apps =  require('./config');
+const {getFirestore,addDoc,collection} = require('firebase/firestore');
 const app = express();
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:false}));
 
+const  db = getFirestore(apps);
+const  collectionRef =  collection(db, "Airtime");
 app.post('/ussd',async(req,res)=>{
    const {
     sessionId,
@@ -21,8 +25,8 @@ app.post('/ussd',async(req,res)=>{
      2 Buy Airtime
      3 My Account`;
    }else if(text === "1"){
-     const  airtime  =  20;
-     response = `END Your Airtime balance is ${airtime} KSH`;
+     const  result = await postAirtime();
+     response = `END ${result}`;
    }else if(text === "2"){
      const  airtime  =  20;
      response = `END Your have bought airtime worthy ${airtime} KSH`;
@@ -47,6 +51,19 @@ app.post('/ussd',async(req,res)=>{
    res.send(response);
 
 })
+//create post  function
+async function postAirtime(){
+  const  data  = {
+    name : "Julius",
+    phone_Number: "0799294225"
+  }
+  try {
+    await addDoc(collectionRef,data);
+    return "Your data is saved"
+  } catch (error) {
+    console.log(error);
+  }
+}
 const port = process.env.PORT || 3000;
 app.listen(port,()=>{
     console.log('Listening at port 3000')
