@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const  apps =  require('./config');
-const {getFirestore,addDoc,collection,getDocs,getDoc,doc} = require('firebase/firestore');
+const {getFirestore,addDoc,collection,getDocs,getDoc,doc,deleteDoc,updateDoc,setDoc} = require('firebase/firestore');
 const app = express();
 app.use(cors())
 app.use(bodyParser.json())
@@ -23,13 +23,14 @@ app.post('/ussd',async(req,res)=>{
      response = `CON Choose what you  want to  do 
      1 Check  Airtime
      2 Buy Airtime
-     3 My Account`;
+     3 My Account
+     4 Delete Account`;
    }else if(text === "1"){
      const  result = await postAirtime();
      response = `END ${result}`;
    }else if(text === "2"){
-     const  airtime  =  20;
-     response = `END Your have bought airtime worthy ${airtime} KSH`;
+     const  airtime = await updateSingleDoc();
+     response = `END ${airtime} `;
    }
    else if(text === "3"){
      response = `CON Choose what you  want to  check
@@ -46,6 +47,10 @@ app.post('/ussd',async(req,res)=>{
     result.forEach((resu,index)=>{
      response += `Names : ${resu.name} \n Phone Number ${resu.phone_Number}`;
     })
+   }
+   else if(text === "4"){
+    const  airtime = await deleteSingleDoc();
+    response = `END ${airtime} `;
    }
 
    res.set('content-type: text/plain');
@@ -82,6 +87,28 @@ async function getSingleDoc(){
   const docRef = doc(collectionRef,"tdYKn7jawRDoTfpJ8sAJ") 
   const result = await getDoc(docRef); 
   return result.data();
+ } catch (error) {
+    console.log(error);
+ }
+}
+async function deleteSingleDoc(){
+ try {
+  const docRef = doc(collectionRef,"tdYKn7jawRDoTfpJ8sAJ") 
+  const result = await deleteDoc(docRef); 
+  return "data deleted";
+ } catch (error) {
+    console.log(error);
+ }
+}
+async function updateSingleDoc(){
+const  data = {
+  name : "James Maina",
+  phone_Number: "0796598108"
+}
+ try {
+  const docRef = doc(collectionRef,"tdYKn7jawRDoTfpJ8sAJ") 
+  const result = await setDoc(docRef,data); 
+  return "data updated";
  } catch (error) {
     console.log(error);
  }
