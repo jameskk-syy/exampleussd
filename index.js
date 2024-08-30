@@ -109,7 +109,8 @@ app.post('/createproduct',async(req,res)=>{
   const Schema = Joi.object({
     productName: Joi.string().required(),
     price:Joi.number().required(),
-    imageUrl:Joi.string().required()
+    imageUrl:Joi.string().required(),
+    description:Joi.string().required()
   })
   const {error} = Schema.validate(req.body);
   if(error) return res.status(400).send(error.details[0].message);
@@ -117,7 +118,8 @@ app.post('/createproduct',async(req,res)=>{
     const data = {
         productName: req.body.productName,
         price : req.body.price,
-        imageUrl: req.body.imageUrl
+        imageUrl: req.body.imageUrl,
+        description:req.body.description
     }
     await addDoc(productsRef,data)
     res.status(200).send("product added successfully")
