@@ -116,7 +116,8 @@ app.post('/createproduct',async(req,res)=>{
    try {
     const data = {
         productName: req.body.productName,
-        price : req.body.price
+        price : req.body.price,
+        imageUrl: req.body.imageUrl
     }
     await addDoc(productsRef,data)
     res.status(200).send("product added successfully")
