@@ -108,7 +108,8 @@ if(error) return res.status(400).send(error.details[0].message);
 app.post('/createproduct',async(req,res)=>{
   const Schema = Joi.object({
     productName: Joi.string().required(),
-    price:Joi.number().required()
+    price:Joi.number().required(),
+    imageUrl:Joi.string().required()
   })
   const {error} = Schema.validate(req.body);
   if(error) return res.status(400).send(error.details[0].message);
