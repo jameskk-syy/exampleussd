@@ -151,10 +151,12 @@ app.put('/products/:id',async(req,res)=>{
 })
 app.get('/products/:id',async(req,res)=>{
  const id  =  req.params.id;
+ const data = [];
   try {
     const docRef = doc(productsRef,id);
     const  result  = await getDoc(docRef);
-    res.send(result.data())
+    data.push({...result.data(),id:result.id})
+    res.send(data)
   } catch (error) {
     res.status(500).send("internal  error")  
   }
@@ -228,7 +230,7 @@ const  data = {
     console.log(error);
  }
 }
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 app.listen(port,()=>{
     console.log('Listening at port 3000')
 })
